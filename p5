@@ -1,0 +1,87 @@
+mplementati un automat finit capabil sa genereze pe iesire cate un puls de lungimea unui ciclu de ceas la detectarea fronturilor crecatoare sau descrescatoare. Semnalul de reset este activ in 0.
+
+Obs: Un caz aparte este cel in care pe intrarea in apare un puls cu o lungime egala cu un ciclu de ceas. In acest caz, pe iesirea out se va genera un puls lung cat doua cicluri de ceas, cate un ciclu de ceas pentru fiecare front.
+
+Interfata modulului este urmatoarea:
+
+module EdgeDetector(
+
+	input clock,
+
+	input in,
+
+	input reset_n,
+
+	output out
+
+);
+
+Obs: Consideram ca semnalul de intrare are la momentul initial valoarea 0.
+
+
+module EdgeDetector(
+    input clock,
+
+    input in,
+
+    input reset_n,
+
+    output out
+    );
+    
+    localparam Q0= 2'b00;
+    localparam Q1= 2'b01;
+    localparam Q2= 2'b10;
+    
+    reg [1:0] state;
+    reg [1:0] state_next;
+    reg[1:0] state_prev;
+    
+    always@(posedge clock)begin
+    
+        if(reset_n==0)
+            state <= Q0;
+        else 
+            state <= state_next;
+        
+    end
+    
+    always@(*)begin
+        case(state)
+        Q0: begin
+            
+            if(in==1)
+                state_next = Q1;
+            else  begin state_next = Q0;   
+                        state_prev = Q0;
+            end
+            end
+            
+        Q1: begin
+            
+            if(in==1)
+                state_next = Q2;
+            else begin  state_next = Q0;   
+                        state_prev = Q1;
+            end
+            end
+            
+        Q2: begin
+            
+            if(in==1)
+                state_next = Q2;
+            else begin
+                state_next = Q0;
+                state_prev = Q2;
+            end      
+            end
+            
+        default: state_next=Q0;
+        
+    endcase
+  
+    end
+    
+    assign out = (state == Q1) | (state == Q0 & (state_prev ==Q1 | state_prev == Q2));
+    
+endmodule
