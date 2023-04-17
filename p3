@@ -1,0 +1,44 @@
+n interiorul Unitatii Centrale de Prelucrare exista o mica memorie care retine date ce pot fi accesate foarte rapid. Aceasta memorie poarta numele de register file si este organizata sub forma unei colectii de registre. 
+
+Implementati un register file cu urmatoarele caracteristici:
+
+- numele modulului este registerFile.
+
+- are in componenta 16 registre de 8 biti.
+
+- numele elementului bidimensional ce reprezinta memoria efectiva se va numi registers.
+
+- are doua porturi de citire asincrona ce pot fi folosite concomitent.
+
+- interfata modulului are urmatoarele semnale:
+
+clock: intrare de ceas
+we: intrare write enable activa in 1.
+read_addr1: intrare de adresa pentru primul port de citire.
+read_addr2: intrare de adresa pentru al doilea port de citire.
+write_addr: intrare de adresa pentru portul de scriere.
+data_in: intrare de date
+data_out1: iesire de date pentru primul port de citire.
+data_out2: iesire de date pentru al doilea port de citire.
+Atentie! Dimesionati semnalele tinand cont de caracteristicile registerFile enuntate mai sus.
+
+module registerFile(
+    input clock,
+    input we,
+    input [3:0] read_addr1,
+    input [3:0] read_addr2,
+    input [3:0] write_addr,
+    input [7:0] data_in,
+    output [7:0] data_out1,
+    output [7:0] data_out2
+);
+
+reg [7:0] registers [0:15];
+
+always@(posedge clock) begin
+    if(we==1)
+      registers[write_addr]  <= data_in;
+end
+assign data_out1=registers[read_addr1];
+assign data_out2=registers[read_addr2];
+endmodule
