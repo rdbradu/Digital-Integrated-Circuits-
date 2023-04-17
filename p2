@@ -1,0 +1,63 @@
+escrieți comportamental un sumator pe 4 biți (full-adder). Folosind acest sumator descrieți structural un sumator pe 8 biți.
+
+sumator pe 8 biti
+
+Fiecare modul se va descrie intr-un fisier separat, respectand cerintele:
+
+Modulul de adunare pe 4 biti:
+
+- numele modulului este sum_4b
+
+- intrarile sunt: a si b cu dimensiunea de 4 biti si c_in, cu dimensiunea de 1 bit.
+
+- iesirile sunt out, cu dimensiunea de 4 biti si c_out, cu dimensiunea de 1 bit.
+
+
+Modulul de adunare pe 8 biti:
+
+- numele modulului este sumator_8b
+
+- intrarile sunt: in0 si in1 cu dimensiunea de 8 biti si carry_in, cu dimensiunea de 1 bit.
+
+- iesirile sunt out, cu dimensiunea de 8 biti si carry_out, cu dimensiunea de 1 bit.
+
+- cele doua instante ale sum_4b din acest modul se vor numi atfel: SUML, pentru sum_4b care aduna cei mai putin semnificativi biti ai lui in0 si in1 si SUMH, pentru sum_4b care aduna cei mai semnificativi biti ai lui in0.
+
+module sum_4b(
+input [3:0] a,
+input [3:0] b,
+input c_in,
+output [3:0] out,
+output c_out
+);
+
+assign {c_out,out} = a+b+c_in;
+endmodule
+
+module sumator_8b(
+    input [7:0] in0,
+    input [7:0] in1,
+    input carry_in,
+    output [7:0] out,
+    output carry_out
+);
+wire x;
+sum_4b SUML( 
+    .a(in0[3:0]),
+    .b(in1[3:0]),
+    .c_in(carry_in),
+    .c_out(x),
+    .out(out[3:0])
+);
+
+sum_4b SUMH( 
+    .a(in0[7:4]),
+    .b(in1[7:4]),
+    .c_in(x),
+    .c_out(carry_out),
+    .out(out[7:4])
+);
+
+assign out= {SUMH.out,SUML.out};
+
+endmodule
